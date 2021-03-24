@@ -36,7 +36,6 @@ class TaskInput extends React.Component<IProps, ITaskInputState> {
   };
 
   handleFieldChange = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handleFieldChange', key, event.target.value)
     this.setState({
       ...this.state,
       task: {

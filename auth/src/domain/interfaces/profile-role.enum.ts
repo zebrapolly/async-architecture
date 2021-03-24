@@ -1,0 +1,6 @@
+export enum PROFILE_ROLE {
+  ADMIN = 'ADMIN',
+  WORKER = 'WORKER',
+  MANAGER = 'MANAGER',
+  ACCOUNTANT = 'ACCOUNTANT'
+}

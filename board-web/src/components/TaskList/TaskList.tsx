@@ -33,7 +33,6 @@ class TaskList extends React.Component<IProps ,ITaskListState> {
 
   getData = async  (callback: Function) => {
     const res = await axios.get('/task');
-    console.log(res);
     callback(res.data);
   };
 
