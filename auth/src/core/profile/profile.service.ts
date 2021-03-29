@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ProfileEntity, ProfileStore } from "../../infrastructure";
 
 @Injectable()
@@ -9,5 +9,14 @@ export class ProfileService {
 
   async findOne(email: string): Promise<ProfileEntity | undefined> {
     return this.profileStore.findOne({email});
+  }
+
+  async getProfile(id: string) {
+    const profile = await this.profileStore.findOne({id});
+    if (!profile) {
+      throw new NotFoundException('Profile not found')
+    }
+    const { password, ...data} = profile;
+    return data;
   }
 }
