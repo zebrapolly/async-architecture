@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PersistenceModule } from './infrastructure';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PresentationModule } from './presentation';
-import { CoreModule } from './core';
 
 @Module({
-  imports: [PresentationModule, PersistenceModule, CoreModule],
+  imports: [TypeOrmModule.forRoot(), PresentationModule ],
 })
 export class AppModule {}

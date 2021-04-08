@@ -9,6 +9,7 @@ services:
     volumes:
       - ./auth/:/usr/src/app
       - ./auth/node_modules:/usr/src/app/node_modules
+      - ./schema-registry:/usr/src/app/schema-registry
     ports:
       - 3011:3011
     command: npm run start:dev
@@ -18,6 +19,26 @@ services:
       - async-arch-net
     depends_on:
       - postgres
+      - rabbitmq
+  account:
+    container_name: account
+    build:
+      context: ./account-svc/
+      target: development
+    volumes:
+      - ./account-svc/:/usr/src/app
+      - ./account-svc/node_modules:/usr/src/app/node_modules
+      - ./schema-registry:/usr/src/app/schema-registry
+    ports:
+      - 3012:3012
+    command: npm run start:dev
+    env_file:
+      - ./account-svc/.env
+    networks:
+      - async-arch-net
+    depends_on:
+      - postgres
+      - rabbitmq
   todo:
     container_name: todo
     build:
@@ -26,6 +47,7 @@ services:
     volumes:
       - ./todo-svc/:/usr/src/app
       - ./todo-svc/node_modules:/usr/src/app/node_modules
+      - ./schema-registry:/usr/src/app/schema-registry
     ports:
       - 3010:3010
     command: npm run start:dev
@@ -35,6 +57,7 @@ services:
       - async-arch-net
     depends_on:
       - postgres
+      - rabbitmq
   postgres:
     container_name: pg-db
     image: bitnami/postgresql:latest
@@ -45,7 +68,7 @@ services:
       POSTGRES_USER: postgres
       PG_DATA: /var/lib/postgresql/data
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
     ports:
       - 32000:5432
   proxy:
@@ -63,7 +86,18 @@ services:
     depends_on:
     - auth
     - todo
+    - account
+  rabbitmq:
+    container_name: rabbitmq
+    image: 'bitnami/rabbitmq:latest'
+    networks:
+      - async-arch-net
+    ports:
+      - '15672:15672'
+    volumes:
+      - 'rabbitmqstats_data:/bitnami'
 networks:
   async-arch-net:
 volumes:
   pgdata:
+  rabbitmqstats_data:

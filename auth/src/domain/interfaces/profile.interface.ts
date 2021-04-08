@@ -1,7 +1,8 @@
 import { PROFILE_ROLE } from './profile-role.enum';
 
 export interface IProfile {
-  id: string;
+  id: number;
+  publicId: string;
   email: string;
   role: PROFILE_ROLE
 }

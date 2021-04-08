@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
+import { ProfilePersistenceModule } from "./profile";
 import { TaskPersistenceModule } from "./task";
 
 @Module({
-  exports: [ TaskPersistenceModule ],
-  imports: [ TaskPersistenceModule ],
+  imports: [ TaskPersistenceModule, ProfilePersistenceModule ],
+  exports: [ TaskPersistenceModule, ProfilePersistenceModule ],
 })
 export class PersistenceModule {}

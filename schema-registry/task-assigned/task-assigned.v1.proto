@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package main;
+
+message TaskAssigned {
+  string taskId = 1;
+  string profileId = 2;
+}
+

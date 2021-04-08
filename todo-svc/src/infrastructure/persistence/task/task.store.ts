@@ -1,58 +1,38 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { plainToClass } from 'class-transformer';
+import { Repository } from "typeorm";
 import { ICreateTask, ITask, TASK_STATUS } from "../../../domain";
-import { TaskModel } from './task.model'; 
-import { v4 } from 'uuid';
+import { TaskEntity } from './task.entity'; 
 
 @Injectable()
 export class TaskStore {
-  private store: TaskModel [] = [
-    {
-      assigneeId: '',
-      assignerId: '',
-      createdAt: new Date(),
-      description: 'test description1',
-      id: '6812b7d1-b8bf-45ee-84f4-c276932e7847',
-      status: TASK_STATUS.NEW,
-      title: 'task title 2'
-    },
-    {
-      assigneeId: '',
-      assignerId: '',
-      createdAt: new Date(),
-      description: 'test description2',
-      id: '6a9421b0-cdd6-4d35-8747-91696f1d0a5a',
-      status: TASK_STATUS.DONE,
-      title: 'task title 1'
-    }
-  ];
+
+  constructor(
+    @InjectRepository(TaskEntity)
+    private readonly repository: Repository<TaskEntity>
+  ) {}
 
   getTasks(params: Partial<ITask>) {
-    return this.store;
+    return this.repository.find(params);
   }
 
-  getTaskById(id: string) {
-    const task = this.store.find(t => t.id === id);
+  getTaskById(publicId: string) {
+    const task = this.repository.findOne({publicId});
     if (!task) {
       throw new NotFoundException('Task not found');
     }
     return task;
   }
 
-  updateTaskById(id: string, payload: Partial<ITask>) {
-    let task = this.store.find(t => t.id ===id);
-    task = Object.assign(task, payload);
+  async updateTaskById(publicId: string, payload: Partial<ITask>) {
+    await this.repository.update({ publicId }, { ...payload});
+    const task = await this.repository.findOne({ publicId })
     return task;
   }
 
   createTask(payload: ICreateTask) {
-    const task: ITask = {
-      ...payload,
-      createdAt: new Date(),
-      id: v4(),
-      status: TASK_STATUS.NEW
-    }
-    this.store.push(task);
-
-    return task;
+    const task = this.repository.save(payload);
+    return plainToClass(TaskEntity ,task);
   }
 }

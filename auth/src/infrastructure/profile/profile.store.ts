@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { IProfile } from "../../domain";
+import { ICreateProfile, IProfile } from "../../domain";
 import { ProfileEntity } from './profile.entity';
 
 @Injectable()
@@ -13,5 +13,9 @@ export class ProfileStore {
 
   findOne(params: Partial<IProfile>) {
     return this.repository.findOne(params);
+  }
+
+  create(payload: ICreateProfile) {
+    return this.repository.save(payload);
   }
 }

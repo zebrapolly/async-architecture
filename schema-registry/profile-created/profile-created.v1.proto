@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package main;
+
+message ProfileCreated {
+  optional string publicId = 1;
+  optional string role = 2;
+}
+

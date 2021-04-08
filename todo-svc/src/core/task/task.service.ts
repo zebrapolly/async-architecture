@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { ICreateTask, TASK_STATUS } from "../../domain";
-import { TaskStore } from "../../infrastructure";
+import { classToPlain } from 'class-transformer';
+import { ICreateTask, ITask, TASK_STATUS } from "../../domain";
+import { TaskStore,EventBusService } from "../../infrastructure";
 
 @Injectable()
 export class TaskService {
   constructor(
-    private readonly taskStore: TaskStore
+    private readonly taskStore: TaskStore,
+    private readonly eventBusService: EventBusService
   ) {
 
   }
@@ -13,16 +15,20 @@ export class TaskService {
     return this.taskStore.getTasks({});
   }
 
-  createTask(payload: ICreateTask) {
-    return this.taskStore.createTask(payload);
+  async createTask(payload: ICreateTask) {
+    const task = await this.taskStore.createTask(payload);
+    console.log('task', task)
+    await this.eventBusService.sendTaskCreated(task);
+    return task;
   }
 
   getTaskById(id:string) {
     return this.taskStore.getTaskById(id)
   }
 
-  completeTask(id: string, ) {
-    return this.taskStore.updateTaskById(id, { status: TASK_STATUS.DONE });
+  async completeTask(id: string) {
+    const task = await this.taskStore.updateTaskById(id, { status: TASK_STATUS.DONE });
+    await this.eventBusService.sendTaskCompleted({taskId: task.publicId});
   }
 
   undoneTask(id: string) {

@@ -1,11 +1,12 @@
 import { Body, Controller, Get, Param, Post, Put } from "@nestjs/common";
-import { TaskService } from "../../core";
+import { TaskService, TaskAssignService } from "../../core";
 import { CreateTaskDto } from "./dto";
 
 @Controller('task')
 export class TaskController {
   constructor(
-    private readonly taskService: TaskService
+    private readonly taskService: TaskService,
+    private readonly taskAssignService: TaskAssignService
   ) {}
 
   @Get()
@@ -31,5 +32,10 @@ export class TaskController {
   @Put('/undone/:id')
   undoneTask(@Param('id') id: string) {
     return this.taskService.undoneTask(id);
+  }
+
+  @Post('assign')
+  assign() {
+    this.taskAssignService.process();
   }
 }

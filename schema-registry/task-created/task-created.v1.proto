@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package main;
+
+message TaskCreated {
+  optional string publicId = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string createdAt = 4;
+  optional TASK_STATUS status = 5;
+  enum TASK_STATUS {
+    NEW = 0;
+    DONE = 1;
+  }
+}
+
