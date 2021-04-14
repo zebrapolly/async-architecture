@@ -1,19 +1,25 @@
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { EventBusService } from './event-bus.service';
 
 
 @Module({
-  imports: [RabbitMQModule.forRoot(RabbitMQModule, {
-    exchanges: [
-      {
-        name: 'tasks',
-        type: 'topic',
-      },
-    ],
-    uri: 'amqp://user:bitnami:rabbitmq:rabbitmq@rabbitmq:5672',
-    connectionInitOptions: {
-      wait: false },
+  imports: [RabbitMQModule.forRootAsync(RabbitMQModule, {
+    imports: [ConfigModule],
+    useFactory: async (configService: ConfigService) => ({
+      uri: configService.get('AMPQ_CONNECTION'),
+      exchanges: [
+        {
+          name: configService.get('TASKS_TOPIC'),
+          type: 'topic',
+        },
+      ],
+      connectionInitOptions: {
+        wait: false }
+    }),
+    inject: [ConfigService]
   })],
   providers: [EventBusService],
   exports: [EventBusService]

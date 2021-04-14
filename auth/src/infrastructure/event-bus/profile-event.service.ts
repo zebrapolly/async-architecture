@@ -11,13 +11,11 @@ export class ProfileEventService {
   ) {}
 
   async sendCreated(profile: IProfileCreatedEvent) {
-    console.log('sendCreated', profile)
     const message = await this.checkAndEncodeMessage((profile));    
     return this.amqpConnection.publish('profiles', 'profile.created', {ver: 1, message})
   }
 
   private checkAndEncodeMessage(profile: IProfileCreatedEvent) {
-    console.log('checkAndEncodeMessage', profile);
     return protobuf.load("/usr/src/app/schema-registry/profile-created/profile-created.v1.proto")
       .then(root => {
         var ProfileCreatedMessage = root.lookupType("main.ProfileCreated");
@@ -27,7 +25,6 @@ export class ProfileEventService {
           throw Error(errMsg)
         };
         const message = ProfileCreatedMessage.create(profile);
-        console.log('checkAndEncodeMessage message', message);
         return ProfileCreatedMessage.encode(message).finish();
       });
   }

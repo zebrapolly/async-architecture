@@ -1,8 +1,8 @@
-import { Get, Controller, Request, Post, Body, ValidationPipe, UsePipes, UseGuards } from '@nestjs/common';
+import { Get, Controller, Request, Post, Body, ValidationPipe, UsePipes, UseGuards, Param } from '@nestjs/common';
 import { JwtAuthGuard, ProfileService } from '../../core';
 import { CreateProfileDto } from './dto';
 
-@Controller('account')
+@Controller('profile')
 export class ProfileController {
   constructor(
     private readonly profileService: ProfileService 
@@ -19,7 +19,13 @@ export class ProfileController {
   // @UseGuards(JwtAuthGuard)
   @UsePipes(ValidationPipe)
   async createProfile(@Body() payload: CreateProfileDto) {
-    console.log('create profile', payload);
     return this.profileService.create(payload);
+  }
+
+  @Get(':id')
+  // @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidationPipe)
+  async findOne(@Param('id') id: string) {
+    return this.profileService.getByPublicId(id);
   }
 }

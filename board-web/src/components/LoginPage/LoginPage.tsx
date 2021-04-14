@@ -19,9 +19,7 @@ interface IProps {
 }
 
 class LoginPage extends React.Component<IProps> {
-  componentDidMount(){
-    console.log('MOUNT');
-    
+  componentDidMount(){    
   }
   onFinish = (values: any) => {
     this.props.login(values)

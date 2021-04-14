@@ -28,4 +28,8 @@ export class ProfileService {
     this.eventService.sendCreated({ publicId, role });
     return account;
   }
+
+  getByPublicId(publicId: string) {
+    return this.profileStore.findOne({ publicId });
+  }
 }

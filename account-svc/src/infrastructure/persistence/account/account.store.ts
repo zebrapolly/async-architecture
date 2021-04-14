@@ -12,7 +12,6 @@ export class AccountStore {
   ) {}
   
   create(payload: ICreateAccount) {
-    console.log('AccountStore payload', payload)
     return this.repository.save(payload);
   }
 

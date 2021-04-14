@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from '@nestjs/config';
 import { classToPlain } from 'class-transformer'; 
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ITask, ITaskAssignedEvent, ITaskCompleterEvent } from "../../domain";
@@ -7,23 +8,27 @@ import * as protobuf from 'protobufjs';
 
 @Injectable()
 export class EventBusService {
+  private exchange: string; 
   constructor(
-    private readonly amqpConnection: AmqpConnection
-  ) {}
+    private readonly amqpConnection: AmqpConnection,
+    private readonly config: ConfigService
+  ) {
+    this.exchange = this.config.get('TASKS_TOPIC');
+  }
 
   async sendTaskCreated(task: ITask) {
     const message = await this.checkAndEncodeMessage(task);    
-    return this.amqpConnection.publish('tasks', 'task.created', {ver: 1, message})
+    return this.amqpConnection.publish(this.exchange, 'task.created', {ver: 1, message})
   }
 
   async sendTaskAssigned(event: ITaskAssignedEvent) {
     const message = await this.checkAndEncodeTaskAssignedMessage(event);
-    return this.amqpConnection.publish('tasks', 'task.assigned', {ver: 1, message})
+    return this.amqpConnection.publish(this.exchange, 'task.assigned', {ver: 1, message})
   }
 
   async sendTaskCompleted(event: ITaskCompleterEvent) {
     const message = await this.checkAndEncodeTaskCompletedMessage(event);
-    return this.amqpConnection.publish('tasks', 'task.completed', {ver: 1, message})
+    return this.amqpConnection.publish(this.exchange, 'task.completed', {ver: 1, message})
   }
 
   private checkAndEncodeTaskCompletedMessage(event: ITaskCompleterEvent) {

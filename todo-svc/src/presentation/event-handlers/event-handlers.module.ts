@@ -2,6 +2,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { Module } from '@nestjs/common';
 import { CoreModule } from '../../core';
 import { ProfileHandlerService } from './profile-handler.service';
+import { TaskAssignHandlerService } from './task-assigned.handler';
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { ProfileHandlerService } from './profile-handler.service';
     }),
     EventHandlersModule,
   ],
-  providers: [ ProfileHandlerService],
+  providers: [ ProfileHandlerService, TaskAssignHandlerService],
 })
 export class EventHandlersModule {}
